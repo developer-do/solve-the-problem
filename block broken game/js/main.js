@@ -30,7 +30,7 @@ function draw() {
     ballMoveX = -(ballMoveX);
   }
   if (ballStartY >= canvas.height - ballDia) {
-    ballMoveY = Math.floor(Math.random() * 5) + 1;
+    ballMoveY = Math.floor(Math.random() * 2) + 3;
     if (ballMoveX < 0) ballMoveX = -(ballAbs - ballMoveY);
     else if (ballMoveX >= 0) ballMoveX = (ballAbs - ballMoveY);
     ballMoveY = -(ballMoveY);
