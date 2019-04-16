@@ -1,22 +1,38 @@
-let canvas         = document.querySelector("#canvas");
-let context        = canvas.getContext("2d");
+let canvas          = document.querySelector("#canvas");
+let context         = canvas.getContext("2d");
 
-let barWidth       = 100;
-let barHeight      = 20;
-let barStartX      = (canvas.width / 2) - (barWidth / 2);
-let barStartY      = canvas.height - barHeight;
-let barMoveRight   = false;
-let barMoveLeft    = false;
+let barWidth        = 100;
+let barHeight       = 20;
+let barStartX       = (canvas.width / 2) - (barWidth / 2);
+let barStartY       = canvas.height - barHeight;
+let barMoveRight    = false;
+let barMoveLeft     = false;
 
-
-let ballDia        = 10;
-let ballStartX     = canvas.width / 2;
-let ballStartY     = canvas.height - (ballDia + barHeight);
-let ballMoveX      = 2;   // x 축으로 이동하는 거리
-let ballMoveY      = -2;  // y 축으로 이동하는 거리
-let ballAbs        = Math.abs(ballMoveX) + Math.abs(ballMoveY);
-
+let ballDia         = 10;
+let ballStartX      = canvas.width / 2;
+let ballStartY      = canvas.height - (ballDia + barHeight);
+let ballMoveX       = 2;   // x 축으로 이동하는 거리
+let ballMoveY       = -2;  // y 축으로 이동하는 거리
+let ballAbs         = Math.abs(ballMoveX) + Math.abs(ballMoveY);
 let ballTouchHeight = canvas.height - (barHeight + ballDia);
+
+let blockRowCnt     = 10;
+let blockColCnt     = 6;
+let blockWidth      = (canvas.width / blockRowCnt);
+let blockHeight     = 20;
+let blockArr        = [];
+
+for (let i = 0; i < blockColCnt; i++) {
+  blockArr[i] = [];
+  for (let j = 0; j < blockRowCnt; j++) {
+    blockArr[i][j] = {
+      state: 1,
+      x: (j * blockWidth) + 1,
+      y: (i * (blockHeight + 1)) + 55
+    }
+  }
+}
+
 
 document.addEventListener("keydown", function (e) {
   if (e.key == "ArrowLeft" || e.keyCode == 37) {
@@ -24,7 +40,6 @@ document.addEventListener("keydown", function (e) {
   } else if (e.key == "ArrowRight" || e.keyCode == 39) {
     barMoveRight = true;
   }
-  console.log(barMoveLeft, barMoveRight);
 });
 
 document.addEventListener("keyup", function (e) {
@@ -33,8 +48,23 @@ document.addEventListener("keyup", function (e) {
   } else if (e.key == "ArrowRight" || e.keyCode == 39) {
     barMoveRight = false;
   }
-  console.log(barMoveLeft, barMoveRight);
 });
+
+
+function blockCreate() {
+  for (let i = 0; i < blockArr.length; i++) {
+    for (let j = 0; j < blockArr[i].length; j++) {
+      if (blockArr[i][j].state == 1) {
+        context.beginPath();
+        context.fillStyle = "coral";
+        context.fillRect(blockArr[i][j].x, blockArr[i][j].y, blockWidth - 1, blockHeight);
+        context.fill();
+        context.closePath();
+      }
+    }
+  }
+}
+
 
 function barCreate() {
   context.beginPath();
@@ -54,26 +84,25 @@ function draw() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   ballCreate();
   barCreate();
+  blockCreate();
   ballStartX += ballMoveX;
   ballStartY += ballMoveY;
-  console.log(ballStartY);
 
   // 볼 벽 튕기기 
-  if (ballStartX >= canvas.width - ballDia) {
+  if (ballStartX >= canvas.width - ballDia || ballStartX <= ballDia) {
     ballMoveX = -(ballMoveX);
-  } else if (ballStartX <= ballDia) {
-    ballMoveX = -(ballMoveX);
-  } else if (ballStartY <= ballDia) {
-    ballMoveY = -(ballMoveY);
   }
-  if (ballStartY >= ballTouchHeight && ballStartX <= barStartX + barWidth && ballStartX >= barStartX) {
-    ballMoveY = Math.floor(Math.random() * 0.2) + 2;
-    ballMoveX < 0 ? ballMoveX = -(ballAbs - ballMoveY) : ballMoveX = (ballAbs - ballMoveY);
+  if (ballStartY <= ballDia) {
     ballMoveY = -(ballMoveY);
-  }
-  if (ballStartY > canvas.height) {
-    draw();
-    clearInterval(ballgogo);
+  } else if (ballStartY >= ballTouchHeight) {
+    if (ballStartX <= barStartX + barWidth && ballStartX >= barStartX) {
+      ballMoveY = Math.floor(Math.random() * 0.2) + 2;
+      ballMoveX < 0 ? ballMoveX = -(ballAbs - ballMoveY) : ballMoveX = (ballAbs - ballMoveY);
+      ballMoveY = -(ballMoveY);
+    } else {
+      // location.reload();
+      // alert("game over");
+    }
   }
 
   // bar에 조건 주기
@@ -87,8 +116,7 @@ function draw() {
 
   // bar 옮기기
   if (barMoveLeft && barStartX > 0) barStartX -= 3;
-  else if (barMoveRight && barStartX < 700) barStartX += 3;
+  else if (barMoveRight && barStartX< 700) barStartX += 3;
 }
 
-let ballgogo = setInterval(draw, 5);
-
+setInterval(draw, 5);
