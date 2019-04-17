@@ -50,6 +50,19 @@ document.addEventListener("keyup", function (e) {
   }
 });
 
+function blockDestroy() { 
+  for (let i = 0; i < blockArr.length; i++) {
+    for (let j = 0; j < blockArr[i].length; j++) {
+      let block = blockArr[i][j];
+      if (block.state == 1) {
+        if (ballStartX > block.x && ballStartX < (block.x + blockWidth - 1) && ballStartY > block.y && ballStartY < (block.y + blockHeight)) {
+          ballMoveY = -(ballMoveY);
+          block.state = 0;
+        }
+      }
+    }
+  }
+}
 
 function blockCreate() {
   for (let i = 0; i < blockArr.length; i++) {
@@ -64,7 +77,7 @@ function blockCreate() {
     }
   }
 }
-
+console.log(blockArr);
 
 function barCreate() {
   context.beginPath();
@@ -85,6 +98,7 @@ function draw() {
   ballCreate();
   barCreate();
   blockCreate();
+  blockDestroy();
   ballStartX += ballMoveX;
   ballStartY += ballMoveY;
 
@@ -99,6 +113,7 @@ function draw() {
       ballMoveY = Math.floor(Math.random() * 0.2) + 2;
       ballMoveX < 0 ? ballMoveX = -(ballAbs - ballMoveY) : ballMoveX = (ballAbs - ballMoveY);
       ballMoveY = -(ballMoveY);
+      console.log(ballMoveY);
     } else {
       // location.reload();
       // alert("game over");
@@ -116,7 +131,7 @@ function draw() {
 
   // bar 옮기기
   if (barMoveLeft && barStartX > 0) barStartX -= 3;
-  else if (barMoveRight && barStartX< 700) barStartX += 3;
+  else if (barMoveRight && barStartX < 700) barStartX += 3;
 }
 
 setInterval(draw, 5);
